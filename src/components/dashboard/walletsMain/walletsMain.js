@@ -9,6 +9,8 @@ import {
 import { getCoinTitle } from '../../../util/coinHelper';
 import Config from '../../../config';
 import Store from '../../../store';
+import assetsPath from '../../../util/assetsPath';
+import appData from '../../../actions/actions/appData';
 
 const PRICES_UPDATE_INTERVAL = 120000; // every 2m
 
@@ -33,8 +35,8 @@ class WalletsMain extends React.Component {
       }, PRICES_UPDATE_INTERVAL);
     }
 
-    if (window.createSeed.triggered &&
-        !window.createSeed.secondaryLoginPH) {
+    if (appData.createSeed.triggered &&
+        !appData.createSeed.secondaryLoginPH) {
       Store.dispatch(
         triggerToaster(
           translate('INDEX.PLEASE_WRITE_DOWN_YOUR_PUB'),
@@ -43,8 +45,11 @@ class WalletsMain extends React.Component {
           false
         )
       );
-    } else if (window.createSeed.triggered && window.createSeed.secondaryLoginPH) {
-      if (window.createSeed.secondaryLoginPH === window.createSeed.firstLoginPH) {
+    } else if (
+      appData.createSeed.triggered &&
+      appData.createSeed.secondaryLoginPH
+    ) {
+      if (appData.createSeed.secondaryLoginPH === appData.createSeed.firstLoginPH) {
         Store.dispatch(
           triggerToaster(
             translate('INDEX.YOUR_SEED_IS_CORRECT'),
@@ -53,7 +58,7 @@ class WalletsMain extends React.Component {
             false
           )
         );
-        window.createSeed = {
+        appData.createSeed = {
           triggered: false,
           firstLoginPH: null,
           secondaryLoginPH: null,
@@ -67,14 +72,14 @@ class WalletsMain extends React.Component {
             false
           )
         );
-        window.createSeed = {
+        appData.createSeed = {
           triggered: false,
           firstLoginPH: null,
           secondaryLoginPH: null,
         };
       }
     } else {
-      window.createSeed = {
+      appData.createSeed = {
         triggered: false,
         firstLoginPH: null,
         secondaryLoginPH: null,
@@ -83,18 +88,21 @@ class WalletsMain extends React.Component {
   }
 
   getCoinStyle(type) {
+    const _coin = this.props.ActiveCoin.coin;
+    const _logoData = getCoinTitle(_coin.toUpperCase());
+
     if (type === 'transparent') {
-      if (getCoinTitle(this.props.ActiveCoin.coin.toUpperCase()).transparentBG &&
-          getCoinTitle().logo) {
-        return { 'backgroundImage': `url("assets/images/bg/${getCoinTitle().logo.toLowerCase()}_transparent_header_bg.png")` };
+      if (_logoData.transparentBG &&
+          _logoData.logo) {
+        return { 'backgroundImage': `url("${assetsPath.bg}/${_logoData.logo.toLowerCase()}_transparent_header_bg.png")` };
       }
     } else if (type === 'title') {
       let _iconPath;
 
-      if (getCoinTitle(this.props.ActiveCoin.coin.toUpperCase()).titleBG) {
-        _iconPath = `assets/images/native/${getCoinTitle(this.props.ActiveCoin.coin.toUpperCase()).logo.toLowerCase()}_header_title_logo.png`;
-      } else if (!getCoinTitle(this.props.ActiveCoin.coin.toUpperCase()).titleBG) {
-        _iconPath = `assets/images/cryptologo/${this.props.ActiveCoin.coin.toLowerCase()}.png`;
+      if (_logoData.titleBG) {
+        _iconPath = `${assetsPath.native}/${_logoData.logo.toLowerCase()}_header_title_logo.png`;
+      } else if (!_logoData.titleBG) {
+        _iconPath = `${assetsPath.coinLogo}/${_coin.toLowerCase()}.png`;
       }
 
       return _iconPath;

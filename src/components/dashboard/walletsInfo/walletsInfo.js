@@ -16,10 +16,12 @@ class WalletsInfo extends React.Component {
   }
 
   displayClaimInterestUI() {
-    if (this.props.ActiveCoin &&
-        this.props.ActiveCoin.balance &&
-        this.props.ActiveCoin.balance.transparent &&
-        this.props.ActiveCoin.balance.transparent > 0) {
+    const _activeCoin = this.props.ActiveCoin;
+
+    if (_activeCoin &&
+        _activeCoin.balance &&
+        _activeCoin.balance.transparent &&
+        _activeCoin.balance.transparent > 0) {
       return true;
     }
   }
@@ -27,7 +29,7 @@ class WalletsInfo extends React.Component {
   render() {
     if (this.props &&
         this.props.ActiveCoin &&
-        (this.props.ActiveCoin.progress || this.props.Dashboard.electrumCoins) &&
+        this.props.Dashboard.electrumCoins &&
         this.props.ActiveCoin.activeSection === 'settings') {
       return WalletsNativeInfoRender.call(this);
     }

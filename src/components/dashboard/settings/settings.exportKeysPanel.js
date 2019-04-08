@@ -145,8 +145,9 @@ class ExportKeysPanel extends React.Component {
     // auto-size textarea
     setTimeout(() => {
       if (this.state.seedInputVisibility) {
-        document.querySelector('#wifkeysPassphraseTextarea').style.height = '1px';
-        document.querySelector('#wifkeysPassphraseTextarea').style.height = `${(15 + document.querySelector('#wifkeysPassphraseTextarea').scrollHeight)}px`;
+        const _ta = document.querySelector('#wifkeysPassphraseTextarea');
+        _ta.style.height = '1px';
+        _ta.style.height = `${(15 + _ta.scrollHeight)}px`;
       }
     }, 100);
   }
@@ -155,9 +156,10 @@ class ExportKeysPanel extends React.Component {
     const _translationComponents = translate(_translationID).split('<br>');
 
     return _translationComponents.map((_translation) =>
-      <span key={ `settings-label-${Math.random(0, 9) * 10}` }>
+      <span
+        className="display--block"
+        key={ `settings-label-${Math.random(0, 9) * 10}` }>
         { _translation }
-        <br />
       </span>
     );
   }
@@ -204,13 +206,18 @@ class ExportKeysPanel extends React.Component {
                   onClick={ this.toggleSeedInputVisibility }></i>
                 <label
                   className="floating-label"
-                  htmlFor="wifkeysPassphrase">{ translate('INDEX.PASSPHRASE') } / WIF</label>
+                  htmlFor="wifkeysPassphrase">
+                  { translate('INDEX.PASSPHRASE') } / WIF
+                </label>
                 { this.state.seedExtraSpaces &&
                   <span>
-                    <i className="icon fa-warning seed-extra-spaces-warning"
+                    <i
+                      className="icon fa-warning seed-extra-spaces-warning"
                       data-tip={ translate('LOGIN.SEED_TRAILING_CHARS') }
-                      data-html={ true }></i>
+                      data-html={ true }
+                      data-for="settingsExportKeys"></i>
                     <ReactTooltip
+                      id="settingsExportKeys"
                       effect="solid"
                       className="text-left" />
                   </span>
@@ -220,7 +227,9 @@ class ExportKeysPanel extends React.Component {
                 <button
                   type="button"
                   className="btn btn-primary waves-effect waves-light margin-bottom-5"
-                  onClick={ this.exportWifKeys }>{ translate('INDEX.GET_WIF_KEYS') }</button>
+                  onClick={ this.exportWifKeys }>
+                  { translate('INDEX.GET_WIF_KEYS') }
+                </button>
               </div>
             </form>
           </div>
@@ -230,7 +239,7 @@ class ExportKeysPanel extends React.Component {
             <div className="col-sm-12 padding-top-15">
               <table className="table no-borders">
                 <tbody>
-                  <tr key={ `wif-export-table-header-pub` }>
+                  <tr key="wif-export-table-header-pub">
                     <td className="padding-bottom-20 padding-top-20">
                       <strong>{ translate('SETTINGS.ADDRESS_LIST') }</strong>
                     </td>

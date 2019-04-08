@@ -1,6 +1,7 @@
 import React from 'react';
 import translate from '../../../translate/translate';
 import ReactTooltip from 'react-tooltip';
+import assetsPath from '../../../util/assetsPath';
 
 const CoinTileItemRender = function() {
   const { item } = this.props;
@@ -14,11 +15,16 @@ const CoinTileItemRender = function() {
           <a className="avatar margin-bottom-5">
             <img
               className="img-responsive"
-              src={ `assets/images/cryptologo/${item.coinlogo.toLowerCase()}.png` }
+              src={ `${assetsPath.coinLogo}/${item.coinlogo.toLowerCase()}.png` }
               alt={ item.coinname }/>
           </a>
           <div className="coin-name">
-            { item.coinname } { item.coinlogo !== 'BEER' && item.coinlogo !== 'PIZZA' && item.coinlogo !== 'VOTE2018' && <span>({ item.coinlogo.toUpperCase() })</span> }
+            { item.coinname }
+            { item.coinlogo !== 'BEER' &&
+              item.coinlogo !== 'PIZZA' &&
+              item.coinlogo !== 'VOTE2018' &&
+              <span className="nbsp-l">({ item.coinlogo.toUpperCase() })</span>
+            }
           </div>
         </div>
       </div>
@@ -27,8 +33,10 @@ const CoinTileItemRender = function() {
         className="btn btn-default btn-xs clipboard-edexaddr coin-tile-context-menu-trigger coind-actions-menu">
         <i
           data-tip={ translate('INDEX.TOGGLE_COIN_CONTEXT_MENU') }
+          data-for="coinTile1"
           className="fa fa-ellipsis-v coin-tile-context-menu-trigger"></i>
         <ReactTooltip
+          id="coinTile1"
           effect="solid"
           className="text-left" />
       </button>
@@ -49,9 +57,11 @@ const CoinTileItemRender = function() {
         this.props.Dashboard.electrumCoins[item.coin].serverList === 'none' &&
         <i
           data-tip={ translate('SETTINGS.SPV_SINGLE_SERVER_NOTICE') }
+          data-for="coinTile2"
           className="icon fa-info-circle icon-spv-connection-warning"></i>
       }
       <ReactTooltip
+        id="coinTile2"
         effect="solid"
         className="text-left" />
     </div>

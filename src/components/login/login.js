@@ -4,19 +4,17 @@ import {
   toggleAddcoinModal,
   shepherdElectrumAuth,
   shepherdElectrumCoins,
-  startInterval,
   getDexCoins,
   triggerToaster,
   toggleLoginSettingsModal,
   stopInterval,
   dashboardChangeActiveCoin,
-  toggleZcparamsFetchModal,
-  toggleNotaryElectionsModal,
   toggleWalletRisksModal,
   shepherdElectrumLogout,
   dashboardRemoveCoin,
   activeHandle,
   addCoin,
+  copyString,
 } from '../../actions/actionCreators';
 import Config from '../../config';
 import Store from '../../store';
@@ -25,16 +23,10 @@ import LoginRender from './login.render';
 import translate from '../../translate/translate';
 import passphraseGenerator from 'agama-wallet-lib/src/crypto/passphrasegenerator';
 import md5 from 'agama-wallet-lib/src/crypto/md5';
+import assetsPath from '../../util/assetsPath';
+import appData from '../../actions/actions/appData';
 
 const SEED_TRIM_TIMEOUT = 5000;
-
-window.createSeed = {
-  triggered: false,
-  firstLoginPH: null,
-  secondaryLoginPH: null,
-};
-
-window.activeCoin = null;
 
 class Login extends React.Component {
   constructor() {
@@ -288,8 +280,9 @@ class Login extends React.Component {
     // auto-size textarea
     setTimeout(() => {
       if (this.state.seedInputVisibility) {
-        document.querySelector('#loginPassphrase').style.height = '1px';
-        document.querySelector('#loginPassphrase').style.height = `${(15 + document.querySelector('#loginPassphrase').scrollHeight)}px`;
+        const _login = document.querySelector('#loginPassphrase');
+        _login.style.height = '1px';
+        _login.style.height = `${(15 + _login.scrollHeight)}px`;
       }
     }, 100);
   }
@@ -339,7 +332,7 @@ class Login extends React.Component {
   }
 
   loginSeed() {
-    window.createSeed.secondaryLoginPH = md5(this.state.loginPassphrase);
+    appData.createSeed.secondaryLoginPH = md5(this.state.loginPassphrase);
 
     // reset the login pass phrase values so that when the user logs out, the values are clear
     this.setState({
@@ -352,7 +345,11 @@ class Login extends React.Component {
     this.refs.loginPassphraseTextarea.value = '';
 
     if (this.state.shouldEncryptSeed) {
-      Store.dispatch(encryptPassphrase(this.state.loginPassphrase, this.state.encryptKey, this.state.pubKey));
+      Store.dispatch(encryptPassphrase(
+        this.state.loginPassphrase,
+        this.state.encryptKey,
+        this.state.pubKey
+      ));
     }
 
     if (this.state.selectedPin) {
@@ -428,8 +425,8 @@ class Login extends React.Component {
   }
 
   execWalletCreate() {
-    window.createSeed.triggered = true;
-    window.createSeed.firstLoginPH = md5(this.state.randomSeed);
+    appData.createSeed.triggered = true;
+    appData.createSeed.firstLoginPH = md5(this.state.randomSeed);
 
     Store.dispatch(
       shepherdElectrumAuth(this.state.randomSeedConfirm)
@@ -456,7 +453,8 @@ class Login extends React.Component {
     // at least one special char
     // min length 10 chars
 
-    const _customSeed = this.state.customWalletSeed ? this.state.randomSeed.match('^(?=.*[A-Z])(?=.*[^<>{}\"/|;:.,~!?@#$%^=&*\\]\\\\()\\[_+]*$)(?=.*[0-9])(?=.*[a-z]).{10,99}$') : false;
+    const _regexPattern = '^(?=.*[A-Z])(?=.*[^<>{}\"/|;:.,~!?@#$%^=&*\\]\\\\()\\[_+]*$)(?=.*[0-9])(?=.*[a-z]).{10,99}$';
+    const _customSeed = this.state.customWalletSeed ? this.state.randomSeed.match(_regexPattern) : false;
 
     this.setState({
       isCustomSeedWeak: _customSeed === null ? true : false,
@@ -491,22 +489,7 @@ class Login extends React.Component {
   }
 
   copyPassPhraseToClipboard() {
-    const passPhrase = this.state.randomSeed;
-    const textField = document.createElement('textarea');
-
-    textField.innerText = passPhrase;
-    document.body.appendChild(textField);
-    textField.select();
-    document.execCommand('copy');
-    textField.remove();
-
-    Store.dispatch(
-      triggerToaster(
-        translate('LOGIN.SEED_SUCCESSFULLY_COPIED'),
-        translate('LOGIN.SEED_COPIED'),
-        'success'
-      )
-    );
+    Store.dispatch(copyString(this.state.randomSeed, translate('LOGIN.SEED_SUCCESSFULLY_COPIED')));
   }
 
   updateSelectedShortcut(e, type) {
@@ -539,13 +522,15 @@ class Login extends React.Component {
   }
 
   renderResetSPVCoinsOption() {
-    if (this.props.Main &&
-        this.props.Main.coins &&
-        this.props.Main.coins.spv &&
-        this.props.Main.coins.spv.length) {
+    const _main = this.props.Main;
+
+    if (_main &&
+        _main.coins &&
+        _main.coins.spv &&
+        _main.coins.spv.length) {
       if (!Config.whitelabel ||
-          (Config.whitelabel && this.props.Main.coins.spv.length === 1 && this.props.Main.coins.spv[0] !== Config.wlConfig.coin.ticker.toLowerCase()) ||
-          (Config.whitelabel && this.props.Main.coins.spv.length > 1)) {
+          (Config.whitelabel && _main.coins.spv.length === 1 && _main.coins.spv[0] !== Config.wlConfig.coin.ticker.toLowerCase()) ||
+          (Config.whitelabel && _main.coins.spv.length > 1)) {
         return true;
       }
     }
@@ -589,7 +574,7 @@ class Login extends React.Component {
         _items.push(
           <span key={ `addcoin-shortcut-icons-${i}` }>
             <img
-              src={ `assets/images/cryptologo/${_comps[i].toLowerCase()}.png` }
+              src={ `${assetsPath.coinLogo}/${_comps[i].toLowerCase()}.png` }
               alt={ _comps[i].toUpperCase() }
               width="30px"
               height="30px" />
@@ -605,7 +590,7 @@ class Login extends React.Component {
       return (
         <div>
           <img
-            src={ `assets/images/cryptologo/${option.value.toLowerCase()}.png` }
+            src={ `${assetsPath.coinLogo}/${option.value.toLowerCase()}.png` }
             alt={ option.value.toUpperCase() }
             width="30px"
             height="30px" />

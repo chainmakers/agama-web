@@ -1,11 +1,12 @@
 // web app config
 let Config = {
-  version: '0.2.0-beta',
+  version: '0.2.5-beta',
   debug: false,
   defaultLang: 'EN',
   roundValues: false,
   fiatRates: true,
   // single coin option
+  sendCoinAllowFiatEntry: false,
   whitelabel: true,
   wlConfig: {
     enableAllCoins: false,
@@ -15,12 +16,15 @@ let Config = {
       ticker: 'KMD',
       name: 'Komodo',
       logo: 'cryptologo/kmd.png', // dashboard coin logo
+      // network: {}, // custom network params
+      // type: true // uncomment this line if your coin is a btc fork (non kmd asset)
     },
     explorer: 'https://kmdexplorer.ru', // insight or iquidus
     serverList: [ // electrum servers list
       'electrum1.cipig.net:10001:tcp',
       'electrum2.cipig.net:10001:tcp',
     ],
+    fee: 10000,
     support: {
       onlineLink: {
         url: 'https://www.atomicexplorer.com/wallet',
