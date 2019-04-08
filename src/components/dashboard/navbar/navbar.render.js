@@ -2,15 +2,29 @@ import React from 'react';
 import translate from '../../../translate/translate';
 import ReactTooltip from 'react-tooltip';
 import Config from '../../../config';
+import assetsPath from '../../../util/assetsPath';
+import appData from '../../../actions/actions/appData';
 
 const NavbarRender = function() {
+  let _imagePath;
+
+  if (Config.whitelabel) {
+    if (Config.wlConfig.coin.logo.indexOf('http') > -1) {
+      _imagePath = Config.wlConfig.coin.logo;
+    } else {
+      _imagePath = `${assetsPath.root}/${Config.wlConfig.coin.logo}`;
+    }
+  } else {
+    _imagePath = assetsPath.root + '/agama-logo-side.svg';
+  }
+
   return (
-    <nav className="site-navbar navbar navbar-default navbar-fixed-top navbar-mega unselectable">
+    <nav className="site-navbar navbar navbar-default navbar-fixed-top navbar-mega">
       <div className="navbar-header">
         <div className="navbar-brand navbar-brand-center site-gridmenu-toggle">
           <img
             className={ 'navbar-brand-logo hidden-xs' + (Config.whitelabel ? ' whitelabel' : '') }
-            src={ Config.whitelabel ? (Config.wlConfig.coin.logo.indexOf('http') > -1 ? Config.wlConfig.coin.logo : 'assets/images/' + Config.wlConfig.coin.logo) : 'assets/images/agama-logo-side.svg' }
+            src={ _imagePath }
             height="100"
             width="100"
             title={ Config.whitelabel ? Config.wlConfig.title : translate('ABOUT.AGAMA_WALLET') } />
@@ -19,7 +33,7 @@ const NavbarRender = function() {
           }
           <img
             className={ 'navbar-brand-logo hidden-lg' + (Config.whitelabel ? ' whitelabel' : '') }
-            src={ Config.whitelabel ? (Config.wlConfig.coin.logo.indexOf('http') > -1 ? Config.wlConfig.coin.logo : 'assets/images/' + Config.wlConfig.coin.logo) : 'assets/images/agama-icon.svg' }
+            src={ _imagePath }
             title={ Config.whitelabel ? Config.wlConfig.title : translate('ABOUT.AGAMA_WALLET') } />
           <span className="navbar-brand-text hidden-xs"></span>
         </div>
@@ -50,9 +64,11 @@ const NavbarRender = function() {
             { !navigator.onLine &&
               <li
                 className="nav-top-menu offline"
-                data-tip={ translate('INDEX.WALLET_OFFLINE') }>
+                data-tip={ translate('INDEX.WALLET_OFFLINE') }
+                data-for="navbar">
                 <span className="offline-icon"></span> { translate('INDEX.OFFLINE') }
                 <ReactTooltip
+                  id="navbar"
                   effect="solid"
                   className="text-left" />
               </li>
@@ -60,13 +76,14 @@ const NavbarRender = function() {
           </ul>
           <ul className="nav navbar-toolbar navbar-right navbar-toolbar-right">
             { (!Config.whitelabel || (Config.whitelabel && Config.wlConfig.enableAllCoins)) &&
+              !appData.isWatchOnly &&
               <li>
                 <a
                   className="pointer padding-bottom-10 padding-top-16"
                   onClick={ this.toggleAddCoinModal }>
                   <span>
                     <img
-                      src="assets/images/icons/activatecoin.png"
+                      src={ `${assetsPath.icons}/activatecoin.png` }
                       alt={ translate('INDEX.ADD_COIN') } />
                   </span>
                 </a>
@@ -85,7 +102,9 @@ const NavbarRender = function() {
               <ul className="dropdown-menu">
                 <li>
                   <a
-                    href={ Config.whitelabel ? Config.wlConfig.support.standaloneLink : 'https://www.atomicexplorer.com/wallet.zip' }
+                    href={
+                      Config.whitelabel ? Config.wlConfig.support.standaloneLink : 'https://www.atomicexplorer.com/wallet.zip'
+                    }
                     target="_blank">
                     <i className="icon fa-download"></i> { translate('INDEX.STANDALONE') }
                   </a>

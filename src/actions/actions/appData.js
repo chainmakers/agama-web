@@ -9,10 +9,17 @@ let appData = {
     spv: [],
     total: 0,
   },
+  activeCoin: null,
+  createSeed: { // seed hash check
+    triggered: false,
+    firstLoginPH: null,
+    secondaryLoginPH: null,
+  },
   keys: {},
   servers: {},
   proxy: {},
   cache: {},
+  isWatchOnly: false,
 };
 
 export default appData;

@@ -1,11 +1,12 @@
 // web app config
 let Config = {
-  version: '0.2.0-beta',
+  version: '0.2.5-beta',
   debug: false,
   defaultLang: 'EN',
   roundValues: false,
   fiatRates: true,
   // single coin option
+  sendCoinAllowFiatEntry: false,
   whitelabel: false,
   /*preload: {
     seed: '',

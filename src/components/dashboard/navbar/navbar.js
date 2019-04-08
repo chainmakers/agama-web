@@ -14,7 +14,6 @@ import {
 } from '../../../actions/actionCreators';
 import Store from '../../../store';
 import Config from '../../../config';
-import { checkAC } from '../../addcoin/payload';
 
 import NavbarRender from './navbar.render';
 
@@ -26,17 +25,18 @@ class Navbar extends React.Component {
     };
     this.openDropMenu = this.openDropMenu.bind(this);
     this.handleClickOutside = this.handleClickOutside.bind(this);
-    this._checkAC = this._checkAC.bind(this);
     this.spvLock = this.spvLock.bind(this);
     this.spvLogout = this.spvLogout.bind(this);
   }
 
   isRenderSpvLockLogout() {
-    if (this.props.Main &&
-        this.props.Main.isLoggedIn &&
-        this.props.Main.coins &&
-        this.props.Main.coins.spv &&
-        this.props.Main.coins.spv.length) {
+    const _propsMain = this.props.Main;
+
+    if (_propsMain &&
+        _propsMain.isLoggedIn &&
+        _propsMain.coins &&
+        _propsMain.coins.spv &&
+        _propsMain.coins.spv.length) {
       return true;
     }
   }
@@ -80,13 +80,15 @@ class Navbar extends React.Component {
   }
 
   handleClickOutside(e) {
+    const _srcElement = e.srcElement;
+
     if (e &&
-        e.srcElement &&
-        e.srcElement.className !== 'dropdown-menu' &&
-        e.srcElement.className !== 'icon fa-bars' &&
-        e.srcElement.title !== 'top menu' &&
-        (e.srcElement.offsetParent && e.srcElement.offsetParent.className !== 'navbar-avatar-inner') &&
-        e.srcElement.className.indexOf('navbar-avatar') === -1 &&
+        _srcElement &&
+        _srcElement.className !== 'dropdown-menu' &&
+        _srcElement.className !== 'icon fa-bars' &&
+        _srcElement.title !== 'top menu' &&
+        (_srcElement.offsetParent && _srcElement.offsetParent.className !== 'navbar-avatar-inner') &&
+        _srcElement.className.indexOf('navbar-avatar') === -1 &&
         (e.path && e.path[4] && e.path[4].className.indexOf('dropdown-menu') === -1)) {
       this.setState({
         openDropMenu: false,
@@ -106,10 +108,6 @@ class Navbar extends React.Component {
 
   dashboardChangeSection(sectionName) {
     Store.dispatch(dashboardChangeSection(sectionName));
-  }
-
-  _checkAC() {
-    return checkAC(this.props.ActiveCoin.coin);
   }
 
   isSectionActive(section) {
